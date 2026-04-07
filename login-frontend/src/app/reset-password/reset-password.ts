@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { finalize } from 'rxjs';
+import { ResetPasswordService } from '../services/reset_password/reset-password.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -31,11 +32,17 @@ export class ResetPassword {
     code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
   });
 
+  passwordForm: FormGroup = this.fb.group({
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    confirmPassword: ['', [Validators.required]]
+  });
+  constructor(private resetPasswordService: ResetPasswordService) { }
+
   sendCode() {
     if (this.emailForm.valid) {
       this.isLoading = true;
       this.email = this.emailForm.value.email;
-      this.http.post('http://localhost:8000/api/request-otp/', { email: this.email })
+      this.resetPasswordService.sendCode(this.email)
         .pipe(finalize(() => { this.isLoading = false; this.cdr.detectChanges(); }))
         .subscribe({
           next: () => { this.step = 2; },
@@ -47,16 +54,42 @@ export class ResetPassword {
   verifyCode() {
     if (this.otpForm.valid) {
       this.isLoading = true;
-      this.http.post('http://localhost:8000/api/verify-otp/', { email: this.email, code: this.otpForm.value.code })
+      this.resetPasswordService.verifyCode(this.email, this.otpForm.value.code)
         .pipe(finalize(() => { this.isLoading = false; this.cdr.detectChanges(); }))
         .subscribe({
           next: () => {
-            Swal.fire('Success', 'Identity verified!', 'success').then(() => {
-              this.router.navigate(['/login']);
-            });
+            this.step = 3;
           },
           error: () => { Swal.fire('Error', 'Invalid or expired code', 'error'); }
         });
     }
+  }
+
+  resetPassword() {
+    if (this.passwordForm.invalid) return;
+
+    const { password, confirmPassword } = this.passwordForm.value;
+
+    if (password !== confirmPassword) {
+      Swal.fire('Error', 'Passwords do not match', 'error');
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.resetPasswordService.resetPassword(this.email, password, this.otpForm.value.code)
+      .pipe(finalize(() => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: () => {
+          Swal.fire('Success', 'Password updated!', 'success')
+            .then(() => this.router.navigate(['/login']));
+        },
+        error: () => {
+          Swal.fire('Error', 'Could not reset password', 'error');
+        }
+      });
   }
 }

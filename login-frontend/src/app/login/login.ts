@@ -17,7 +17,6 @@ import { finalize } from 'rxjs';
 })
 export class Login {
   private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
 
@@ -39,7 +38,15 @@ export class Login {
         this.cdr.detectChanges(); // 👈 forzás que Angular procese el cambio ANTES de que Swal aparezca
       })).subscribe({
         next: (response) => {
-          Swal.fire('Success', 'Login successful!', 'success').then(() => {
+          localStorage.setItem('token', JSON.stringify(response.access));
+          localStorage.setItem('refreshToken', JSON.stringify(response.refresh));
+          Swal.fire({
+            icon: 'success',
+            title: 'Login successful!',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+          }).then(() => {
             this.router.navigate(['/home']);
           });
         },
