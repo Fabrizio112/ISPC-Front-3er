@@ -1,0 +1,62 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <loader *ngIf="isLoading"></loader>
+
+    <div
+        class="container max-w-5xl min-h-[80vh] mx-auto border rounded-4xl shadow-md flex flex-col md:flex-row bg-white overflow-hidden">
+
+        <div
+            class="w-full md:w-1/2 flex flex-col justify-center items-center gap-4 bg-blue-800 text-white p-10 rounded-r-[150px]">
+            <h1 class="text-4xl font-extrabold">Welcome Back !!</h1>
+            <p>Enter your details to access the website</p>
+            <button
+                class="bg-transparent text-white font-bold py-3 px-6 border rounded-lg cursor-pointer hover:bg-blue-700"
+                (click)="formService.changeStatusForm('login')" routerLink="/login">
+                Sign In
+            </button>
+        </div>
+
+        <div class="w-full md:w-1/2 flex flex-col justify-center items-center gap-4 p-10">
+            <h2 class="text-4xl font-extrabold">Register</h2>
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 w-full">
+                <div class="flex flex-col gap-3">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" formControlName="username" required class="p-2 border rounded">
+                    <div *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched"
+                        class="text-red-500 text-sm">
+                        Username is required.
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" formControlName="email" required class="p-2 border rounded">
+                    <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+                        class="text-red-500 text-sm">
+                        Please enter a valid email.
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" formControlName="password" required class="p-2 border rounded">
+                    <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+                        class="text-red-500 text-sm">
+                        Password must be at least 6 characters long.
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" id="confirmPassword" formControlName="confirmPassword" required
+                        class="p-2 border rounded">
+                    <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched !== registerForm.get('password')?.value"
+                        class="text-red-500 text-sm">
+                        Passwords do not match.
+                    </div>
+                </div>
+                <button type="submit" [disabled]="!registerForm.valid || isLoading"
+                    class="bg-blue-600 text-white font-bold p-2 border rounded-lg cursor-pointer hover:bg-blue-700">
+                    Register
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>

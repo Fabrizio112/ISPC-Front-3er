@@ -1,14 +1,45 @@
-<div class="login-container">
-  <h2>Login</h2>
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <div>
-      <label for="username">Username:</label>
-      <input type="text" id="username" formControlName="username" required>
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <loader *ngIf="isLoading"></loader>
+  <div
+    class="container max-w-5xl min-h-[80vh] mx-auto border rounded-4xl shadow-md flex flex-col-reverse md:flex-row bg-white overflow-hidden">
+
+    <div class="w-full md:w-1/2 flex flex-col justify-center items-center gap-4 p-10">
+      <h2 class="text-4xl font-extrabold">Sign In</h2>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 w-full">
+        <div class="flex flex-col gap-3">
+          <label for="username">Username:</label>
+          <input type="text" id="username" formControlName="username" required class="p-2 border rounded">
+          <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+            class="text-red-500 text-sm">
+            Username is required.
+          </div>
+        </div>
+        <div class="flex flex-col gap-3">
+          <label for="password">Password:</label>
+          <input type="password" id="password" formControlName="password" required class="p-2 border rounded">
+          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            class="text-red-500 text-sm">
+            Password is required.
+          </div>
+        </div>
+        <div class="flex justify-center items-center gap-2">
+          <label for="forgotPassword">Forgot your password?</label>
+          <a href="/forgot-password" class="text-blue-600 hover:underline">Recover Password</a>
+        </div>
+        <button type="submit" [disabled]="!loginForm.valid"
+          class="bg-blue-600 text-white font-bold p-2 border rounded-lg cursor-pointer hover:bg-blue-700">Login</button>
+      </form>
     </div>
-    <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" formControlName="password" required>
+
+    <div
+      class="w-full md:w-1/2 flex flex-col justify-center items-center gap-4 bg-blue-800 text-white p-10 rounded-l-[150px]">
+      <h1 class="text-4xl font-extrabold">Hello Friend</h1>
+      <p>Sign up with your personal email to use the application</p>
+      <button class="bg-transparent text-white font-bold py-3 px-6 border rounded-lg cursor-pointer hover:bg-blue-700"
+        (click)="formService.changeStatusForm('register')" routerLink="/register">
+        Sign Up
+      </button>
     </div>
-    <button type="submit" [disabled]="!loginForm.valid">Login</button>
-  </form>
+
+  </div>
 </div>
